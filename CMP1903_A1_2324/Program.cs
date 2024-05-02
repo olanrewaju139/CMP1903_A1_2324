@@ -1,48 +1,118 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CMP1903_A1_2324
+using DiceGames;
+
+namespace DiceGames;
+
+class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+
+        var stats = Statistics.InitializeFromSaveFile() ?? new Statistics();
+
+        DisplayMainGameMenu();
+
+        void DisplayMainGameMenu()
         {
-            
-            Game run= new Game();
-            
-            run.Start();//initial games
-            
-            
-            Testing test = new Testing();
-            test.GameTest();// testing the game and Die
-            Console.WriteLine(" ");
+            Console.Clear();
 
-            // <black-eye-inc> Summary of entire review:
-            // "Program.cs" functions perfectly fine and flawlessly -- well done!
-            // all commenting is great -- neither over explaining or under explaining how the code works
-            // Other than the missing EXTRA Funtionality requirement of being able to "continuously roll the dice" in "Game.cs"
-            // and the dodgy "Debug.Assert()" statement in "Testing.cs" I'd say this program meets all required criteria
-            // mentioned in the brief.
-            // Keep up the good work and I have full faith you'll pass Computer Science!
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(@"======= Dice Games =======
+Choose an option:
+1 - Sevens Out (Single Player)
+2 - Sevens Out (Two Player)
+3 - Three or More (Single Player)
+4 - Three or More Two Player  (Two Player)
+5 - View Statistics
+6 - Perform Tests
+7 - Exit
+");
+                try
+                {
+                    Player player1;
+                    Player player2;
+                    Game game;
+                    var input = int.Parse(Console.ReadLine()!);
+                    if (input >= 1 & input <= 4)
+                    {
+                        switch (input)
+                        {
+                            case 1:
+                                Console.Clear();
+                                Console.WriteLine("Enter your name: ");
+                                player1 = new HumanPlayer(Console.ReadLine()!);
+                                player2 = new ComputerPlayer();
+                                game = new SevensOut(player1, player2);
+                                break;
+                            case 2:
+                                Console.Clear();
+                                Console.WriteLine("Player 1, enter your name: ");
+                                player1 = new HumanPlayer(Console.ReadLine()!);
+                                Console.WriteLine("Player 2, enter your name: ");
+                                player2 = new HumanPlayer(Console.ReadLine()!);
+                                game = new SevensOut(player1, player2);
+                                break;
+                            case 3:
+                                Console.Clear();
+                                Console.WriteLine("Enter your name: ");
+                                player1 = new HumanPlayer(Console.ReadLine()!);
+                                player2 = new ComputerPlayer();
+                                game = new ThreeOrMore(player1, player2);
+                                break;
+                            default:
+                                Console.Clear();
+                                Console.WriteLine("Player 1, enter your name: ");
+                                player1 = new HumanPlayer(Console.ReadLine()!);
+                                Console.WriteLine("Player 2, enter your name: ");
+                                player2 = new HumanPlayer(Console.ReadLine()!);
+                                game = new ThreeOrMore(player1, player2);
+                                break;
+                        }
+                        game.Run();
+                        stats.RecordGame(game);
 
-            // Overall a great compliance with the C# style guide's naming rules (e.g: using PascalCase for all method names),
-            // with only one slip-up with "HoldValue" in "Die.cs".
-            // Here's the URL for the  C# Style Guide encase you want it: https://google.github.io/styleguide/csharp-style.html
-            // that said, few of the other rules specified by the C# style guide were followed,
-            // For example
-            // - all comments must start at column 53 ("Col 53") and go
-                                                    // something like this, continuing on the next
-                                                    // line every time you reach column 100
-            // - There must be an indent after the namespace
-            // - and many more small petty things I personally won't bother with and with settle for a "2:1 pass"
+                        Console.Write("\nPress enter key to return to the main menu");
+                        Console.Read();
+                    }
+                    else if (input >= 5 & input <= 7)
+                    {
+                        switch (input)
+                        {
+                            case 5:
+                                stats.Display();
+                                break;
+                            case 6:
+                                PerformTests();
+                                break;
+                            case 7:
+                                stats.SaveToFile();
+                                Environment.Exit(0);
+                                break;
+                        }
+                        Console.Write("\nPress enter key to return to the main menu");
+                        Console.Read();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input, try again");
 
-            // I haven't found XML Documentation in your code, although it is only manditory/uselful if you want the top marks
-            // Here's a URL to the XML Documentation and how to use it: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/documentation-comments
-            // </black-eye-inc>
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid input, try again");
+                }
+            }
+        }
+
+
+        void PerformTests()
+        {
+            var testing = new Testing();
+
+            testing.PerformAllTests();
         }
     }
 }
